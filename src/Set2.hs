@@ -90,3 +90,47 @@ queryGreek2 = \d s -> link (lookupMay s d)
   $ \maximumOfTailOfXs -> link (headMay xs)
   $ \headOfXs -> divMay (fromIntegral maximumOfTailOfXs) (fromIntegral headOfXs)
 
+
+addSalaries :: [(String, Integer)] -> String -> String -> Maybe Integer
+addSalaries t k1 k2 = case lookupMay k1 t of
+  Nothing -> Nothing
+  Just s1 -> case lookupMay k2 t of
+    Nothing -> Nothing
+    Just s2 -> mkMaybe (s1 + s2) -- Just (s1 + s2)
+
+-- addSalaries :: [(String, Integer)] -> String -> String -> Maybe Integer
+-- addSalaries = \t k1 k2 -> link (lookupMay k1 t)
+--   $ \s1 -> link (lookupMay k2 t)
+--   $ \s2 -> Just (s1 + s2)
+
+-- yLink :: (a -> b -> Maybe c) -> Maybe a -> Maybe b -> Maybe c
+-- yLink _ Nothing  Nothing  = Nothing
+-- yLink _ Nothing  _        = Nothing
+-- yLink _ _        Nothing  = Nothing
+-- yLink f (Just a) (Just b) = f a b
+
+-- Strange, the problem asks for a yLink fn analogous to chain / link
+-- above, but (rather than the above defn) turns out they expect the
+-- following type signature...
+
+-- Actually (TODO) I think this is supposed to be implemented in terms
+-- of link.
+
+yLink :: (a -> b -> c) -> Maybe a -> Maybe b -> Maybe c
+yLink _ Nothing  Nothing  = Nothing
+yLink _ Nothing  _        = Nothing
+yLink _ _        Nothing  = Nothing
+yLink f (Just a) (Just b) = mkMaybe (f a b) -- Just (f a b)
+
+addSalaries2 :: [(String, Integer)] -> String -> String -> Maybe Integer
+addSalaries2 t k1 k2 = yLink (+) (lookupMay k1 t) (lookupMay k2 t)
+
+mkMaybe :: a -> Maybe a
+mkMaybe = Just
+
+-- Docs advice, in set 2-5 it is hard to deduce the type signature
+-- they expect, especially given
+--   yLink :: (a -> b -> Maybe c) -> Maybe a -> Maybe b -> Maybe c
+-- is more obvious given the defns of chain and link.  Similary, there
+-- is no indication for yLink that it should be implemented in terms
+-- of link (which then impied in set 4-2).
