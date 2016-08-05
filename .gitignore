@@ -6,4 +6,6 @@ solutions
 _site
 _cache
 hakyll/site
-src/Set[1-5].hs
+.stack-work/*
+stack.yaml
+#src/Set[1-5].hs
