@@ -4,6 +4,18 @@
 module Set1 where
 
 import MCPrelude
+import Numeric (readHex)
+import Data.List (head)
+
+chunksOf :: Int -> [a] -> [[a]]
+chunksOf n l
+  | length chunk < n = []
+  | otherwise = chunk : chunksOf n rest
+    where
+      (chunk, rest) = splitAt n l
+
+hexDecode :: String -> String
+hexDecode = map (toEnum . fst . head . readHex) . (chunksOf 2)
 
 type Gen a = Seed -> (a, Seed)
 

@@ -4,18 +4,8 @@
 module Set2 where
 
 import MCPrelude
-import Numeric (readHex)
-import Data.List as List
-
-chunksOf :: Int -> [a] -> [[a]]
-chunksOf n l
-  | length chunk < n = []
-  | otherwise = chunk : chunksOf n rest
-    where
-      (chunk, rest) = splitAt n l
-
-hexDecode :: String -> String
-hexDecode = map (toEnum . fst . head . readHex) . (chunksOf 2)
+import Set1 (hexDecode)
+import Data.List (maximum, minimum)
 
 data Maybe a = Nothing | Just a
   deriving (Eq, Ord)
@@ -45,11 +35,11 @@ divMay x y
 
 maximumMay :: Ord a => [a] -> Maybe a
 maximumMay [] = Nothing
-maximumMay l = Just (List.maximum l)
+maximumMay l = Just (maximum l)
 
 minimumMay :: Ord a => [a] -> Maybe a
 minimumMay [] = Nothing
-minimumMay l = Just (List.minimum l)
+minimumMay l = Just (minimum l)
 
 queryGreek :: GreekData -> String -> Maybe Double
 queryGreek d s = case lookupMay s d of
