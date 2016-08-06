@@ -134,3 +134,62 @@ mkMaybe = Just
 -- is more obvious given the defns of chain and link.  Similary, there
 -- is no indication for yLink that it should be implemented in terms
 -- of link (which then impied in set 4-2).
+
+-- -------
+-- Set 2-6
+-- -------
+
+-- mfmap :: (a -> b) -> Maybe a -> Maybe b
+-- mfmap _ Nothing = Nothing
+-- mfmap f (Just a) = Just (f a)
+
+-- tailProd :: Num a => [a] -> Maybe a
+-- tailProd = (mfmap product) . tailMay
+
+-- tailProduct :: Num a => [a] -> Maybe a
+-- tailProduct xs = case tailMay xs of
+--   Nothing -> Nothing
+--   Just txs -> Just (product txs)
+
+-- tailSum :: Num a => [a] -> Maybe a
+-- tailSum xs = case tailMay xs of
+--   Nothing -> Nothing
+--   Just txs -> Just (sum txs)
+
+transMaybe :: (a -> b) -> Maybe a -> Maybe b
+transMaybe _ Nothing = Nothing
+transMaybe f (Just a) = Just (f a)
+
+tailProd :: Num a => [a] -> Maybe a
+tailProd = (transMaybe product) . tailMay
+
+tailSum :: Num a => [a] -> Maybe a
+tailSum = (transMaybe sum) . tailMay
+
+-- tailMax :: Ord a => [a] -> Maybe a
+-- tailMax = (transMaybe maximum) . tailMay
+
+-- tailMin :: Ord a => [a] -> Maybe a
+-- tailMin = (transMaybe minimum) . tailMay
+
+-- Apparently the type signatures for tailMin and tailMax should
+-- actually be:
+--   Ord a => [a] -> Maybe (Maybe a)
+-- That's because minimum and maximum don't work on empty lists
+-- (unlike product and sum above).
+
+tailMax :: Ord a => [a] -> Maybe (Maybe a)
+tailMax = (transMaybe maximumMay) . tailMay
+
+tailMin :: Ord a => [a] -> Maybe (Maybe a)
+tailMin = (transMaybe minimumMay) . tailMay
+
+combine :: Maybe (Maybe a) -> Maybe a
+combine Nothing = Nothing
+combine (Just m) = m
+
+tailMaxCombined :: Ord a => [a] -> Maybe a
+tailMaxCombined = combine . tailMax
+
+tailMinCombined :: Ord a => [a] -> Maybe a
+tailMinCombined = combine . tailMin
