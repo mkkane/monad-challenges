@@ -29,10 +29,10 @@ instance Show Card where
 -- allCards _ [] = []
 -- allCards (r:ranks) suits = map (\s -> Card r s) suits ++ allCards ranks suits
 
-allCombs :: (a -> b -> c) -> [a] -> [b] -> [c]
-allCombs _ [] _ = []
-allCombs _ _ [] = []
-allCombs f (x:xs) ys = map (f x) ys ++ allCombs f xs ys
+-- allCombs :: (a -> b -> c) -> [a] -> [b] -> [c]
+-- allCombs _ [] _ = []
+-- allCombs _ _ [] = []
+-- allCombs f (x:xs) ys = map (f x) ys ++ allCombs f xs ys
 
 allPairs :: [a] -> [b] -> [(a, b)]
 allPairs = allCombs (,)
@@ -40,9 +40,18 @@ allPairs = allCombs (,)
 allCards :: [Int] -> [String] -> [Card]
 allCards = allCombs Card
 
+-- allCombs3 :: (a -> b -> c -> d) -> [a] -> [b] -> [c] -> [d]
+-- allCombs3 _ [] _ _ = []
+-- allCombs3 f (x:xs) ys zs = map (\(y, z) -> f x y z) (allCombs (,) ys zs)
+--   ++ allCombs3 f xs ys zs
+
+combStep :: [a -> b] -> [a] -> [b]
+combStep [] _ = []
+combStep _ [] = []
+combStep (f:fs) as = map f as ++ combStep fs as
+
+allCombs :: (a -> b -> c) -> [a] -> [b] -> [c]
+allCombs f as bs = combStep (map f as) bs
+
 allCombs3 :: (a -> b -> c -> d) -> [a] -> [b] -> [c] -> [d]
-allCombs3 _ [] _ _ = []
-allCombs3 _ _ [] _ = []
-allCombs3 _ _ _ [] = []
-allCombs3 f (x:xs) ys zs = map (\(y, z) -> f x y z) (allCombs (,) ys zs)
-  ++ allCombs3 f xs ys zs
+allCombs3 f as bs cs = combStep (combStep (map f as) bs) cs
