@@ -83,3 +83,26 @@ instance Monad Gen where
 
 evalGen :: Gen a -> Seed -> a
 evalGen (Gen ga) = fst . ga
+
+sequence :: (Monad m) => [m a] -> m [a]
+sequence [] = return []
+sequence (ma:mas) = bind ma (\a -> bind (sequence mas) (\as -> return (a:as)))
+
+liftM2 :: (Monad m) => (a -> b -> c) -> m a -> m b -> m c
+liftM2 f ma mb = bind ma
+  $ \a -> bind mb
+  $ \b -> return (f a b)
+
+(=<<) :: (Monad m) => (a -> m b) -> m a -> m b
+(=<<) = flip bind
+
+join :: (Monad m) => m (m a) -> m a
+join = (=<<) id
+-- join mma = bind mma id
+
+liftM3 :: (Monad m) => (a -> b -> c -> d) -> m a -> m b -> m c -> m d
+liftM3 f ma mb mc = bind ma (\a -> liftM2 (f a) mb mc)
+-- must be a nicer way to write that (maybe with (=<<) and liftM2)
+
+ap :: (Monad m) => m (a -> b) -> m a -> m b
+ap = liftM2 (\f -> \a -> f a)
